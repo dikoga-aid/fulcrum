@@ -105,6 +105,54 @@ All three documents were written to the `main` branch of `dikoga-aid/fulcrum` wo
 
 ---
 
+## Code Review stage (2026-06-19) — Solutions Architect (Líbero)
+
+### Artifacts produced
+
+| Artifact | Path | Author | Date |
+|---|---|---|---|
+| Code Review | `deploy/code-review-vol4.md` | Solutions Architect (Líbero) | 2026-06-19 |
+
+### Actions taken
+
+- Read `deploy/tech-spec-vol4.md`, `deploy/pipeline-spec-vol4.md`, `deploy/prd-vol4.md`, and this CHANGE-LOG as primary context.
+- Read `render.yaml` directly from branch `feature/VOL-4-fulcrum-qa-blueprint` (`git show feature/VOL-4-fulcrum-qa-blueprint:render.yaml`).
+- Ran `node deploy/validate-render-yaml.mjs` independently — confirmed 44/44 PASS, exit 0.
+- Walked all 17 acceptance criteria against the Blueprint.
+- Produced `deploy/code-review-vol4.md` with per-AC verdicts and one change request (CR-1).
+
+### Verdict
+
+**REQUEST CHANGES — one item (CR-1):** `render.yaml` must add `postgresMajorVersion: 16` to the `fulcrum-qa-db` database block (spec §4.1 requires PostgreSQL 16 explicitly). `deploy/validate-render-yaml.mjs` must add a corresponding assertion. All other aspects of the Blueprint are correct and clean. Artifact is approvable once CR-1 is resolved.
+
+**No live systems touched. No production environment at risk. Review is design/IaC only.**
+
+---
+
+## CR-1 resolution (2026-06-19) — Developer (Atacante)
+
+### Change request addressed
+
+**Source:** Líbero code review `deploy/code-review-vol4.md`, change request CR-1 (blocking).
+**Criterion:** Tech Spec §4.1 — QA database must run PostgreSQL 16 explicitly.
+
+### What changed
+
+| File | Change | Reversible? |
+|---|---|---|
+| `render.yaml` | Added `postgresMajorVersion: 16` to `fulcrum-qa-db` database block | Yes — remove that one line |
+| `deploy/validate-render-yaml.mjs` | Added `# Database configuration` assertion block: finds `databases:` section, locates `fulcrum-qa-db` within it, asserts `postgresMajorVersion: 16` is present | Yes — remove the new assertion block (lines between `# Database configuration` and `# Pre-deploy command`) |
+
+### Validator result
+
+**46/46 assertions PASS, exit 0.** (Previous baseline: 44/44. New assertions: 2 — block found + postgresMajorVersion value.)
+
+### Rollback
+
+Remove `postgresMajorVersion: 16` from `render.yaml` (databases block) and remove the corresponding `# Database configuration` section from `deploy/validate-render-yaml.mjs`. No live infra was touched; this is IaC/config only.
+
+---
+
 ## Volante routing log (orchestration, not a live change)
 | Date | Operator | Action | Reversible? |
 |---|---|---|---|

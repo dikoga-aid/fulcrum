@@ -51,4 +51,5 @@ databases:
   - name: fulcrum-qa-db
     databaseName: fulcrum_qa
     plan: starter
+    postgresMajorVersion: 16
     ipAllowList: []

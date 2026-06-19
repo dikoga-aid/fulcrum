@@ -83,7 +83,33 @@ assert(
 );
 
 // -----------------------------------------------------------------------
-// 2. preDeployCommand
+// 2. Database configuration -- postgresMajorVersion must be 16 (Tech Spec §4.1)
+// -----------------------------------------------------------------------
+console.log('\n# Database configuration');
+
+// Find the top-level `databases:` section, then locate fulcrum-qa-db within it
+const databasesSectionIdx = lines.findIndex(l => /^databases:\s*$/.test(l));
+const dbBlockIdx = databasesSectionIdx !== -1
+  ? lines.findIndex((l, i) => i > databasesSectionIdx && /^\s+-\s+name:\s+fulcrum-qa-db\s*$/.test(l))
+  : -1;
+assert('fulcrum-qa-db database block found', dbBlockIdx !== -1);
+if (dbBlockIdx !== -1) {
+  // Collect lines in this database block until the next top-level list item or end
+  const dbBlockLines = [];
+  for (let i = dbBlockIdx; i < lines.length; i++) {
+    if (i > dbBlockIdx && /^\s+-\s+name:/.test(lines[i])) break;
+    dbBlockLines.push(lines[i]);
+  }
+  const dbBlock = dbBlockLines.join('\n');
+  assert(
+    'fulcrum-qa-db sets postgresMajorVersion: 16',
+    /postgresMajorVersion:\s+16/.test(dbBlock),
+    `Database block:\n${dbBlock}`
+  );
+}
+
+// -----------------------------------------------------------------------
+// 3. preDeployCommand
 // -----------------------------------------------------------------------
 console.log('\n# Pre-deploy command');
 
