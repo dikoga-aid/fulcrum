@@ -57,7 +57,7 @@ The enterprise repository `Anthropic-Identity/fulcrum` is still empty — the or
 
 ## Commit
 
-The commit hash is recorded below after push.
+**Commit hash:** `b0040f7`
 
 **Message:** `VOL-4: CR-1 add postgresMajorVersion:16 to fulcrum-qa-db + validator assertion`
 
